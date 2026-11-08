@@ -1,3 +1,4 @@
+
 """
 =========================================================
 UNIT 4 DISCUSSION: BINARY SEARCH TREES (BST)
@@ -17,14 +18,18 @@ class Node:
         # TODO (Student):
         # Store the node's value and initialize references
         # to the left and right child nodes.
-        pass
+
+        self.value = value
+        self.left = None
+        self.right = None
 
 
 class BST:
     def __init__(self):
         # TODO (Student):
         # Initialize an empty Binary Search Tree.
-        pass
+
+        self.root = None
 
     def insert(self, value):
         """
@@ -37,7 +42,10 @@ class BST:
           whether a value is smaller or larger than the
           current node.
         """
-        pass
+
+        # Start at the root and let recursion find the
+        # correct location for the new equipment ID.
+        self.root = self._insert_recursive(self.root, value)
 
     def _insert_recursive(self, node, value):
         """
@@ -50,7 +58,25 @@ class BST:
         - Insert larger values into the right subtree.
         - Return the updated node reference.
         """
-        pass
+
+        # An empty position means we can create a new node.
+        if node is None:
+            return Node(value)
+
+        # Smaller equipment IDs belong on the left.
+        if value < node.value:
+            node.left = self._insert_recursive(node.left, value)
+
+        # Larger equipment IDs belong on the right.
+        elif value > node.value:
+            node.right = self._insert_recursive(node.right, value)
+
+        # Duplicate IDs are ignored so each ID stays unique.
+        else:
+            return node
+
+        # Return the updated node to maintain the tree.
+        return node
 
     def search(self, value):
         """
@@ -63,14 +89,30 @@ class BST:
         - Add comments explaining why BST search is often
           more efficient than linear search.
         """
-        pass
+
+        # A BST can skip an entire subtree after comparing
+        # values instead of checking every item in order.
+        return self._search_recursive(self.root, value)
 
     def _search_recursive(self, node, value):
         """
         TODO (Student):
         Implement recursive BST search.
         """
-        pass
+
+        # Reaching an empty position means the ID is missing.
+        if node is None:
+            return False
+
+        # The requested equipment ID was found.
+        if value == node.value:
+            return True
+
+        # Search only the subtree that could contain the ID.
+        if value < node.value:
+            return self._search_recursive(node.left, value)
+
+        return self._search_recursive(node.right, value)
 
     def inorder(self):
         """
@@ -78,7 +120,10 @@ class BST:
         Return a list containing the values from an
         in-order traversal.
         """
-        pass
+
+        values = []
+        self._inorder_recursive(self.root, values)
+        return values
 
     def _inorder_recursive(self, node, values):
         """
@@ -92,7 +137,21 @@ class BST:
         - Add comments explaining why this traversal
           produces sorted output in a BST.
         """
-        pass
+
+        # An empty node has nothing to visit.
+        if node is None:
+            return
+
+        # Left subtree contains smaller values.
+        self._inorder_recursive(node.left, values)
+
+        # Visit the current equipment ID.
+        values.append(node.value)
+
+        # Right subtree contains larger values.
+        self._inorder_recursive(node.right, values)
+
+        # Left, root, right produces ascending sorted IDs.
 
 
 def main():
@@ -111,7 +170,21 @@ def main():
     # 5. Use comments to explain why a BST is efficient at reducing search space for each step.
 
     print("\n=== TREE CONSTRUCTION ===")
-    print("TODO: Create a BST and insert multiple values.")
+
+    # Equipment inventory example:
+    # Each number represents a unique equipment ID.
+    equipment_ids = [1050, 1025, 1075, 1010, 1040, 1060, 1090]
+
+    inventory = BST()
+
+    for equipment_id in equipment_ids:
+        inventory.insert(equipment_id)
+
+    print("Equipment IDs inserted:", equipment_ids)
+
+    # A balanced BST reduces the search space at each level.
+    # Instead of checking every ID, the program chooses
+    # the left or right subtree based on the target value.
 
     # ===============================
     # TODO (Student): IN-ORDER TRAVERSAL
@@ -124,7 +197,12 @@ def main():
     #    sorted output in a BST.
 
     print("\n=== IN-ORDER TRAVERSAL ===")
-    print("TODO: Display and explain traversal results.")
+
+    sorted_ids = inventory.inorder()
+    print("Equipment IDs in sorted order:", sorted_ids)
+
+    # In-order traversal visits left, root, then right.
+    # This prints equipment IDs from smallest to largest.
 
     # ===============================
     # TODO (Student): SEARCH TESTS
@@ -136,7 +214,17 @@ def main():
     # 3. Use comments to clearly explain the results.
 
     print("\n=== SEARCH TESTS ===")
-    print("TODO: Demonstrate BST searching.")
+
+    # Existing IDs should return True.
+    print("Search for 1025:", inventory.search(1025))
+    print("Search for 1090:", inventory.search(1090))
+
+    # Missing IDs should return False.
+    print("Search for 1030:", inventory.search(1030))
+    print("Search for 1100:", inventory.search(1100))
+
+    # The search follows only one possible path through
+    # the tree instead of scanning every equipment ID.
 
     # ===============================
     # TODO (Student): EDGE CASES
@@ -153,8 +241,30 @@ def main():
     # Use comments to explain what happens and why.
 
     print("\n=== EDGE CASES ===")
-    print("TODO: Demonstrate and explain an edge case.")
 
+    # Edge case 1: An empty tree has no values to traverse.
+    empty_tree = BST()
+    print("Empty tree traversal:", empty_tree.inorder())
+
+    # Searching an empty tree returns False.
+    print("Search empty tree:", empty_tree.search(1050))
+
+    # Edge case 2: Inserting a duplicate should not
+    # create a second node with the same equipment ID.
+    inventory.insert(1025)
+    print("After duplicate insertion:", inventory.inorder())
+
+    # Edge case 3: A tree with only one node still works.
+    single_tree = BST()
+    single_tree.insert(2000)
+
+    print("Single-node tree:", single_tree.inorder())
+    print("Search single-node tree:", single_tree.search(2000))
+
+    # Insertion order affects the tree's shape.
+    # Sequential insertion can create an unbalanced tree
+    # with O(n) search time, while a balanced BST usually
+    # supports searching in O(log n) time.
 
 
 if __name__ == "__main__":
